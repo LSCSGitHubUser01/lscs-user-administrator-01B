@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { hot } from 'react-hot-loader/root'
+import { Route, Router, withSiteData } from 'react-static'
+import { Switch } from 'react-router'
+import Routes from 'react-static-routes'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Sidebar from './components/Sidebar/Sidebar'
+import style from './Style'
+import { docTypes } from './utils'
+
+const App = ({ componentMenu, versions }) => (
+  <div style={style.container}>
+    <Router>
+      <>
+        <Switch>
+          {/*
+           * We can't place <Sidebar /> inside of <Routes /> because it will be remounted on page
+           * switch. We also don't want to show <Sidebar /> for layouts pages and maximized pages.
+           */}
+          <Route exact path='/layouts/:name' component={null} />
+          <Route path='/maximize/*' component={null} />
+
+          <Route path='/'>
+            {(props) => (
+              <Sidebar
+                {...props}
+                componentMenu={componentMenu}
+                style={style.menu}
+                version={versions.suir}
+              />
+            )}
+          </Route>
+        </Switch>
+
+        <Routes />
+      </>
+    </Router>
+  </div>
+)
+
+App.propTypes = {
+  componentMenu: docTypes.componentMenu.isRequired,
+  versions: docTypes.versions,
 }
 
-export default App;
+export default hot(withSiteData(App))
